@@ -1,0 +1,23 @@
+﻿# Java / Spring Boot
+backend/target/
+*.class
+*.jar
+*.war
+
+# React / Node
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# 環境変数
+.env
+.env.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
