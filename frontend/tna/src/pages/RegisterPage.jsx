@@ -1,4 +1,5 @@
 import "../App.css";
+import { getErrorMessage } from "../utils/errorUtil";
 import "./LoginRegister.css";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -15,7 +16,15 @@ function RegisterPage() {
   const [passwordError, setPasswordError] = useState("");
 
   const nameRegex = /^[A-Za-z0-9_]+$/;
-  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  
+  const isValidEmail = (value) => {
+    const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    return regex.test(value);
+  };
+
+  const MAIL_MAX_LENGTH = 50;
+  const PASSWORD_MIN_LENGTH = 8;
+  const PASSWORD_MAX_LENGTH = 16;
 
   const isValidPassword = (value) => {
     if (value.length < 8) return false;
@@ -78,27 +87,35 @@ function RegisterPage() {
       valid = false;
     }
 
-    if (!email) {
-      setMailError("メールアドレスは必須です");
-      valid = false;
-    } else if (email.length > 50) {
-      setMailError("文字数上限を超えています");
-      valid = false;
-    } else if (!emailRegex.test(email)) {
-      setMailError("正しいメールアドレスを入力してください");
-      valid = false;
+  const mailChecker = (value) => {
+    if (!value) {
+      setMailError(getErrorMessage("E001", "メールアドレス"));
+      return false;
+    } else if (!isValidEmail(value)) {
+      setMailError(getErrorMessage("E002", "メールアドレス"));
+      return false;
+    } else if (value.length > MAIL_MAX_LENGTH) {
+      setMailError(getErrorMessage("E003", "メールアドレス", MAIL_MAX_LENGTH.toString()));
+      return false;
     }
+    return true;
+  }
 
-    if (!password) {
-      setPasswordError("パスワードは必須です");
-      valid = false;
-    } else if (password.length > 50) {
-      setPasswordError("文字数上限を超えています");
-      valid = false;
-    } else if (!isValidPassword(password)) {
-      setPasswordError("正しいパスワードを入力してください");
-      valid = false;
+  const passwordChecker = (value) => {
+    if (!value) {
+      setPasswordError(getErrorMessage("E001", "パスワード"));
+      return false;
+    // } else if (!isValidEmail(value)) {
+    //   // TODO: パスワードに形式チェックなんて無いのでは？設計書修正が必要
+    //   setPasswordError(getErrorMessage("E002", "パスワード"));
+    //   return false;
+    } else if (value.length < PASSWORD_MIN_LENGTH || value.length > PASSWORD_MAX_LENGTH) {
+      setPasswordError(getErrorMessage("E004", "パスワード", PASSWORD_MIN_LENGTH.toString(), PASSWORD_MAX_LENGTH.toString()));
+      return false;
     }
+    return true;
+  }
+
 
     if (!valid) return;
 
