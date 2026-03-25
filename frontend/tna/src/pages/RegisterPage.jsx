@@ -1,0 +1,228 @@
+import "../App.css";
+import "./LoginRegister.css";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+
+function RegisterPage() {
+  const navigate = useNavigate();
+
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [nameError, setNameError] = useState("");
+  const [mailError, setMailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const nameRegex = /^[A-Za-z0-9_]+$/;
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+  const isValidPassword = (value) => {
+    if (value.length < 8) return false;
+
+    const hasLetter = /[A-Za-z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+    const hasSymbol = /[^A-Za-z0-9]/.test(value);
+
+    const typeCount = [hasLetter, hasNumber, hasSymbol].filter(Boolean).length;
+
+    return typeCount >= 2;
+  };
+
+    const mailChecker = (value) => {
+      if (!value) {
+        setMailError(getErrorMessage("E001", "メールアドレス"));
+        return false;
+      } else if (!isValidEmail(value)) {
+        setMailError(getErrorMessage("E002", "メールアドレス"));
+        return false;
+      } else if (value.length > MAIL_MAX_LENGTH) {
+        setMailError(getErrorMessage("E003", "メールアドレス", MAIL_MAX_LENGTH.toString()));
+        return false;
+      }
+      return true;
+    }
+  
+    const passwordChecker = (value) => {
+      if (!value) {
+        setPasswordError(getErrorMessage("E001", "パスワード"));
+        return false;
+      // } else if (!isValidEmail(value)) {
+      //   // TODO: パスワードに形式チェックなんて無いのでは？設計書修正が必要
+      //   setPasswordError(getErrorMessage("E002", "パスワード"));
+      //   return false;
+      } else if (value.length < PASSWORD_MIN_LENGTH || value.length > PASSWORD_MAX_LENGTH) {
+        setPasswordError(getErrorMessage("E004", "パスワード", PASSWORD_MIN_LENGTH.toString(), PASSWORD_MAX_LENGTH.toString()));
+        return false;
+      }
+      return true;
+    }
+    
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    setNameError("");
+    setMailError("");
+    setPasswordError("");
+
+    let valid = true;
+
+    if (!userName) {
+      setNameError("名前は必須です");
+      valid = false;
+    } else if (userName.length > 50) {
+      setNameError("文字数上限を超えています");
+      valid = false;
+    } else if (!nameRegex.test(userName)) {
+      setNameError("正しい名前を入力してください");
+      valid = false;
+    }
+
+    if (!email) {
+      setMailError("メールアドレスは必須です");
+      valid = false;
+    } else if (email.length > 50) {
+      setMailError("文字数上限を超えています");
+      valid = false;
+    } else if (!emailRegex.test(email)) {
+      setMailError("正しいメールアドレスを入力してください");
+      valid = false;
+    }
+
+    if (!password) {
+      setPasswordError("パスワードは必須です");
+      valid = false;
+    } else if (password.length > 50) {
+      setPasswordError("文字数上限を超えています");
+      valid = false;
+    } else if (!isValidPassword(password)) {
+      setPasswordError("正しいパスワードを入力してください");
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    try {
+      const response = await fetch("http://localhost:8080/api/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userName: userName,
+          email: email,
+          password: password
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("登録失敗:", errorText);
+        alert("ユーザ登録に失敗しました");
+        return;
+      }
+
+      const data = await response.json();
+      console.log("登録成功:", data);
+
+      alert("ユーザ登録成功");
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      alert("サーバーに接続できません");
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-box">
+        <h1 className="auth-title">新規会員登録</h1>
+
+        <p className="auth-subtitle">
+          名前、メールアドレス、パスワードを入力してください
+        </p >
+
+        <p className="password-rule">
+          ※パスワードは8文字以上で入力してください。<br />
+          英字・数字・記号のうち2種類以上を含める必要があります。
+        </p >
+
+        <form onSubmit={handleRegister}>
+          <div className="input-group">
+            <label htmlFor="user_name">ユーザ名</label>
+
+            <input
+              id="user_name"
+              type="text"
+              maxLength="50"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
+
+            {nameError && (
+              <p id="name_error_message" className="error-text">
+                {nameError}
+              </p >
+            )}
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="email">メールアドレス</label>
+
+            <input
+              id="email"
+              type="text"
+              maxLength="50"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            {mailError && (
+              <p id="mail_error_message" className="error-text">
+                {mailError}
+              </p >
+            )}
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="password">パスワード</label>
+
+            <input
+              id="password"
+              type="password"
+              maxLength="50"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            {passwordError && (
+              <p id="password_error_message" className="error-text">
+                {passwordError}
+              </p >
+            )}
+          </div>
+
+          <button
+            id="register_button"
+            type="submit"
+            className="main-button"
+          >
+            登録
+          </button>
+        </form>
+
+        <div className="link-area">
+          <Link
+            id="to_login_link"
+            to="/"
+            className="sub-link"
+          >
+            ログイン画面はこちら
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default RegisterPage;
