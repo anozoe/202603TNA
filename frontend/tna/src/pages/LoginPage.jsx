@@ -168,7 +168,7 @@ function LoginPage() {
             to="/register"
             className="sub-link"
           >
-            新規会員登録はこちら
+            ユーザ登録へ
           </Link>
         </div>
       </div>
