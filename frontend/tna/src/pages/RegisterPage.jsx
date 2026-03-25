@@ -120,7 +120,7 @@ function RegisterPage() {
     } catch (error) {
       // TODO:メールアドレス重複エラーの実装が必要
       // setMailError(getErrorMessage("E005", "メールアドレス"));
-      
+
       console.error(error);
       alert("サーバーに接続できません");
     }
@@ -129,7 +129,7 @@ function RegisterPage() {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h1 className="auth-title">新規会員登録</h1>
+        <h1 className="auth-title">ユーザ登録</h1>
 
         <p className="auth-subtitle">
           名前、メールアドレス、パスワードを入力してください
@@ -210,7 +210,7 @@ function RegisterPage() {
             to="/"
             className="sub-link"
           >
-            ログイン画面へ
+            ログインへ
           </Link>
         </div>
       </div>
