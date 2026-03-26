@@ -12,6 +12,8 @@ function LoginPage() {
 
   const [mailError, setMailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [connectError, setConnectError] = useState("");
 
   const MAIL_MAX_LENGTH = 50;
   const PASSWORD_MIN_LENGTH = 8;
@@ -23,8 +25,6 @@ function LoginPage() {
   };
   
   const isValidPassword = (value) => {
-    if (value.length < 8) return false;
-
     const hasLetter = /[A-Za-z]/.test(value);
     const hasNumber = /[0-9]/.test(value);
     const hasSymbol = /[^A-Za-z0-9]/.test(value);
@@ -52,21 +52,23 @@ function LoginPage() {
     if (!value) {
       setPasswordError(getErrorMessage("E001", "パスワード"));
       return false;
-    } else if (!isValidPassword(value)) {
-      setPasswordError(getErrorMessage("E002", "パスワード"));
-      return false;
     } else if (value.length < PASSWORD_MIN_LENGTH || value.length > PASSWORD_MAX_LENGTH) {
       setPasswordError(getErrorMessage("E004", "パスワード", PASSWORD_MIN_LENGTH.toString(), PASSWORD_MAX_LENGTH.toString()));
       return false;
+    } else if (!isValidPassword(value)) {
+      setPasswordError(getErrorMessage("E002", "パスワード"));
+      return false;
     }
     return true;
-  }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     setMailError("");
     setPasswordError("");
+    setLoginError("");
+    setConnectError("");
 
     let valid = true;
     if (!mailChecker(email)) valid = false;
@@ -86,9 +88,7 @@ function LoginPage() {
       });
 
       if (!response.ok) {
-        // TODO:メッセージに追加。設計書修正が必要。そもそも２か所に出す必要はないのでは？
-        setMailError("メールアドレスまたはパスワードが違います");
-        setPasswordError("メールアドレスまたはパスワードが違います");
+        setLoginError(getErrorMessage("E008", "メールアドレス", "パスワード"));
         return;
       }
 
@@ -98,14 +98,11 @@ function LoginPage() {
       localStorage.setItem("loginUserName", data.userName);
       localStorage.setItem("loginUserEmail", data.email);
 
-      // TODO:メッセージに追加と設計書修正が必要
-      console.log("ログイン成功:", data);
-
-      navigate("/todo");
+      navigate("/users");
     } catch (error) {
       console.error(error);
       // TODO:メッセージに追加と設計書修正が必要。メールの領域に出すのも違和感。
-      setMailError("サーバーに接続できません");
+      setConnectError(getErrorMessage("E007", "サーバー"));
     }
   };
 
@@ -113,6 +110,16 @@ function LoginPage() {
     <div className="auth-container">
       <div className="auth-box">
         <h1 className="auth-title">ログイン</h1>
+        {loginError && (
+          <p id="login_error_message" className="error-text">
+            {loginError}
+          </p>
+        )}
+        {connectError && (
+          <p id="connect_error_message" className="error-text">
+            {connectError}
+          </p>
+        )}
 
         <form onSubmit={handleLogin}>
           <div className="input-group">
@@ -130,7 +137,7 @@ function LoginPage() {
             {mailError && (
               <p id="mail_error_message" className="error-text">
                 {mailError}
-              </p >
+              </p>
             )}
           </div>
 
@@ -149,7 +156,7 @@ function LoginPage() {
             {passwordError && (
               <p id="password_error_message" className="error-text">
                 {passwordError}
-              </p >
+              </p>
             )}
           </div>
 
