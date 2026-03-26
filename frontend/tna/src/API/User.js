@@ -1,11 +1,13 @@
+export async function getUserList(yearMonth, page = 0, size = 10) {
+  const response = await fetch(
+    `http://localhost:8080/api/users/${yearMonth}?page=${page}&size=${size}`
+  );
 
-const BASE_URL = "http://localhost:8080";
+  const data = await response.json();
 
-export const getUserList = async (yearMonth) => {
-    const url = `${BASE_URL}/api/users/${yearMonth}`;
-    return fetch (url)
-        .then(response => response.json())
-        .then(data => {
-            return data
-        })
-};
+  if (!response.ok) {
+    throw new Error(data.message || "サーバーに接続できません");
+  }
+
+  return data;
+}

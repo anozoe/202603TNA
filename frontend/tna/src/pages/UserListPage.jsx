@@ -3,7 +3,6 @@ import "./UserListPage.css";
 import { useNavigate } from "react-router-dom";
 import { getUserList } from "../API/User";
 
-
 const generateMonthOptions = () => {
   const options = [];
   const now = new Date();
@@ -12,10 +11,11 @@ const generateMonthOptions = () => {
     const yyyymm = d.getFullYear() * 100 + (d.getMonth() + 1);
     options.push(yyyymm);
   }
-  
   return options;
 };
+
 const monthOptions = generateMonthOptions();
+
 const formatMonth = (yyyymm) => {
   const year = Math.floor(yyyymm / 100);
   const month = yyyymm % 100;
@@ -24,44 +24,57 @@ const formatMonth = (yyyymm) => {
 
 const formatWorkTime = (time) => {
   if (!time) return "0:00";
-  return time.slice(0, -3); 
+  return time.slice(0, -3);
 };
 
 function ListPage({ onLogout }) {
   const loginUserId = Number(localStorage.getItem("loginUserId"));
   const loginUserName = localStorage.getItem("loginUserName");
   const navigate = useNavigate();
+
   const [userList, setUserList] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(monthOptions[0]);
+  const [commonError, setCommonError] = useState("");
+
+  const [page, setPage] = useState(0);
+  const [size] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
   useEffect(() => {
-    getUserList(selectedMonth)
-      .then(data => setUserList(data));
-  }, [selectedMonth]);
+    getUserList(selectedMonth, page, size)
+      .then((data) => {
+        const content = Array.isArray(data.content) ? data.content : [];
 
-
-  const handleMoveAttendancePage = (user) => {
-    navigate("/attendance", {
-      state: {
-        userId: user.id,
-        displayName: user.name,
-        isReadOnly: user.id === loginUserId ? false : true,
-        selectedYearMonth: selectedMonth,
-      },
-    });
-  }; 
-
-  useEffect(() => {
-    getUserList(selectedMonth)
-      .then(data => {
-        const sorted = [...data].sort((a, b) => {
+        const sorted = [...content].sort((a, b) => {
           if (a.userId === loginUserId) return -1;
           if (b.userId === loginUserId) return 1;
           return 0;
         });
+
         setUserList(sorted);
+        setTotalPages(data.totalPages ?? 0);
+        setTotalElements(data.totalElements ?? 0);
+        setCommonError("");
+      })
+      .catch((error) => {
+        setUserList([]);
+        setTotalPages(0);
+        setTotalElements(0);
+        setCommonError(error.message || "サーバーに接続できません");
       });
-  }, [selectedMonth]);
+  }, [selectedMonth, page, size, loginUserId]);
+
+  const handleMoveAttendancePage = (user) => {
+    navigate("/attendance", {
+      state: {
+        userId: user.userId,
+        displayName: user.name,
+        isReadOnly: user.userId === loginUserId ? false : true,
+        selectedYearMonth: selectedMonth,
+      },
+    });
+  };
 
   const handleLogout = () => {
     if (onLogout) {
@@ -71,6 +84,22 @@ function ListPage({ onLogout }) {
     alert("ログアウト");
   };
 
+  const handlePreviousPage = () => {
+    if (page > 0) {
+      setPage(page - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (page + 1 < totalPages) {
+      setPage(page + 1);
+    }
+  };
+
+  const handleChangeMonth = (e) => {
+    setSelectedMonth(Number(e.target.value));
+    setPage(0);
+  };
 
   return (
     <div className="list-page">
@@ -88,10 +117,7 @@ function ListPage({ onLogout }) {
         <div>
           <div className="list-month-selector">
             <span className="list-month-selector__label">対象月</span>
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            >
+            <select value={selectedMonth} onChange={handleChangeMonth}>
               {monthOptions.map((m) => (
                 <option key={m} value={m}>
                   {formatMonth(m)}
@@ -99,10 +125,9 @@ function ListPage({ onLogout }) {
               ))}
             </select>
           </div>
-          {/* <button className="list-my-page-btn" onClick={handleMoveMyAttendancePage}>
-            自分の勤怠画面へ
-          </button> */}
         </div>
+
+        {commonError && <p className="error-text">{commonError}</p >}
 
         <div className="list-table-wrap">
           <table className="list-table">
@@ -116,25 +141,43 @@ function ListPage({ onLogout }) {
             </thead>
             <tbody>
               {userList.map((user) => (
-                <tr 
+                <tr
                   key={user.userId}
                   className={user.userId === loginUserId ? "highlight-row" : ""}
                 >
-                    <td>{user.name}</td>
-                    <td>{user.workDays}</td>
-                    <td>{formatWorkTime(user.workTimeTotal)}</td>
-                    <td>
-                      <button
-                        className="list-view-btn"
-                        onClick={() => handleMoveAttendancePage(user)}
-                      >
-                        詳細
-                      </button>
-                    </td>
+                  <td>{user.name}</td>
+                  <td>{user.workDays}</td>
+                  <td>{formatWorkTime(user.workTimeTotal)}</td>
+                  <td>
+                    <button
+                      className="list-view-btn"
+                      onClick={() => handleMoveAttendancePage(user)}
+                    >
+                      詳細
+                    </button>
+                  </td>
                 </tr>
               ))}
+              {userList.length === 0 && (
+                <tr>
+                  <td colSpan="4">データがありません。</td>
+                </tr>
+              )}
             </tbody>
           </table>
+        </div>
+
+        <div className="list-pagination">
+          <button onClick={handlePreviousPage} disabled={page === 0}>
+            前へ
+          </button>
+          <span>
+            {totalPages === 0 ? 0 : page + 1} / {totalPages}
+          </span>
+          <button onClick={handleNextPage} disabled={page + 1 >= totalPages}>
+            次へ
+          </button>
+          <span className="list-pagination__count">総件数：{totalElements}件</span>
         </div>
       </main>
     </div>
