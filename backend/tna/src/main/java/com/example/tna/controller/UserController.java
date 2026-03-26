@@ -9,6 +9,7 @@ import com.example.tna.service.UserService;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -22,6 +23,7 @@ public class UserController {
         this.userService = userService; 
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{yearMonth}")
     public ResponseEntity<List<UserResponse>> getUserList(@PathVariable Integer yearMonth) {
         List<UserResponse> userResult = userService.getUserList(yearMonth);

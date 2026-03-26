@@ -1,31 +1,30 @@
 package com.example.tna.service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import com.example.tna.dto.UserResponse;
-import com.example.tna.entity.UserEntity;
-import com.example.tna.repository.UserRepository;
+import com.example.tna.repository.AttendanceRepository;
+
 
 @Service
 public class UserService {
-    private final UserRepository userRepository;
+    private final AttendanceRepository attendanceRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(AttendanceRepository attendanceRepository) {;
+        this.attendanceRepository = attendanceRepository;
     }
 
     public List<UserResponse> getUserList(Integer yearMonth) {
-        List<UserEntity> entities = userRepository.findAll();
-        List<UserResponse> userResponseList = new ArrayList<>();
-        for (UserEntity entity : entities) {
-            UserResponse response = new UserResponse();
-            BeanUtils.copyProperties(entity, response);
-            userResponseList.add(response);
-        }
-        return userResponseList;
+        int year = yearMonth / 100;
+        int month = yearMonth % 100;
+        LocalDate fromDate = LocalDate.of(year, month, 1);
+        LocalDate toDate = fromDate.withDayOfMonth(fromDate.lengthOfMonth());
+
+        // SQLで集計取得
+        return attendanceRepository.findSummaryByMonth(fromDate, toDate);
+
     }
 }
