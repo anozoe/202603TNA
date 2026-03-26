@@ -78,7 +78,12 @@ function RegisterPage() {
       password.length > PASSWORD_MAX_LENGTH
     ) {
       setPasswordError(
-        getErrorMessage("E004", "パスワード", PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH)
+        getErrorMessage(
+          "E004",
+          "パスワード",
+          PASSWORD_MIN_LENGTH,
+          PASSWORD_MAX_LENGTH
+        )
       );
       valid = false;
     } else if (!isValidPassword(password)) {
@@ -91,6 +96,7 @@ function RegisterPage() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
     if (!validate()) return;
 
     try {
@@ -119,14 +125,15 @@ function RegisterPage() {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h1 className="auth-title">新規会員登録</h1>
+        <h1 className="auth-title">ユーザ登録</h1>
 
         <p className="auth-subtitle">
           名前、メールアドレス、パスワードを入力してください
         </p >
 
         <p className="password-rule">
-          ※パスワードは8文字以上16文字以下で入力してください。<br />
+          ※パスワードは8文字以上16文字以下で入力してください。
+          <br />
           英字・数字・記号のうち2種類以上を含める必要があります。
         </p >
 

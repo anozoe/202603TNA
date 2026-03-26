@@ -5,7 +5,7 @@ import RegisterPage from "./pages/RegisterPage";
 import AttendancePage from "./AttendancePage";
 import ListPage from "./ListPage";
 
-function AttendanceMyPageWrapper() {
+function AttendancePageWrapper() {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -16,33 +16,8 @@ function AttendanceMyPageWrapper() {
     userId: loginUserId,
     displayName: loginUserName,
     isReadOnly: false,
-  };
-
-  return (
-    <AttendancePage
-      userId={state.userId}
-      loginUserName={loginUserName}
-      displayName={state.displayName}
-      isReadOnly={state.isReadOnly}
-      onLogout={() => {
-        localStorage.clear();
-        navigate("/");
-      }}
-      onBack={() => navigate("/users")}
-    />
-  );
-}
-
-function AttendanceViewPageWrapper() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const loginUserName = localStorage.getItem("loginUserName") || "User Name";
-
-  const state = location.state || {
-    userId: 2,
-    displayName: "他人ユーザ",
-    isReadOnly: true,
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
   };
 
   return (
@@ -81,8 +56,7 @@ function App() {
       <Route path="/" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/users" element={<UsersPageWrapper />} />
-      <Route path="/attendance/my" element={<AttendanceMyPageWrapper />} />
-      <Route path="/attendance/view" element={<AttendanceViewPageWrapper />} />
+      <Route path="/attendance" element={<AttendancePageWrapper />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

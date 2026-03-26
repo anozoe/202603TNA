@@ -1,5 +1,6 @@
 import "./AttendancePage.css";
 import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const API_BASE_URL = "http://localhost:8080/api/attendance";
 
@@ -48,9 +49,16 @@ function AttendancePage({
   onLogout,
   onBack,
 }) {
+  const location = useLocation();
+  const state = location.state || {};
+
   const today = new Date();
-  const [selectedYear, setSelectedYear] = useState(today.getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(
+    state.year || today.getFullYear()
+  );
+  const [selectedMonth, setSelectedMonth] = useState(
+    state.month || (today.getMonth() + 1)
+  );
   const [rows, setRows] = useState([]);
   const [errors, setErrors] = useState({});
   const [pageMessage, setPageMessage] = useState("");
@@ -284,7 +292,6 @@ function AttendancePage({
       if (row.breakTime !== "0:00" && !isValidTime(row.breakTime)) {
         nextErrors[`breakTime-${row.id}`] = "※正しい休憩時間を入力してください";
       }
-
     });
 
     setErrors(nextErrors);
@@ -303,6 +310,55 @@ function AttendancePage({
     setIsLoading(true);
     setPageMessage("");
 
+    try {
+      const requestBody = {
+        userId,
+        year: selectedYear,
+        month: selectedMonth,
+        attendanceRowList: rows.map((row) => ({
+          id: row.id,
+          workDate: row.workDate,
+          startTime: sanitizeTimeForSave(row.startTime),
+          endTime: sanitizeTimeForSave(row.endTime),
+          breakTime: sanitizeTimeForSave(row.breakTime),
+          actualWorkTime: row.actualWorkTime || "0:00",
+          workStatus: row.workStatus,
+        })),
+      };
+
+      const response = await fetch(API_BASE_URL, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "更新ができませんでした。");
+      }
+
+      const normalizedRows = (data.attendanceRowList || []).map((row, index) =>
+        normalizeRowForDisplay({
+          id: row.id ?? index + 1,
+          workDate: row.workDate ?? "",
+          startTime: row.startTime ?? "",
+          endTime: row.endTime ?? "",
+          breakTime: row.breakTime ?? "",
+          actualWorkTime: row.actualWorkTime ?? "0:00",
+          workStatus: normalizeWorkStatus(row.workStatus),
+        })
+      );
+
+      setRows(normalizedRows);
+      setErrors({});
+    } catch (error) {
+      setPageMessage(error.message || "更新ができませんでした。");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBack = () => {
@@ -511,19 +567,21 @@ function AttendancePage({
                         </span>
                       ) : (
                         <select
-                          className="attendance-select"
-                          value={row.workStatus}
-                          onChange={(e) => handleStatusChange(row.id, e.target.value)}
-                          onBlur={() => handleBlurRow(row.id)}
-                        >
-                          <option value="" disabled hidden></option>
-                          {WORK_STATUS_OPTIONS.filter(
-                            (option) => option.value !== WORK_STATUS.NONE
-                          ).map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
+                        className="attendance-select"
+                        value={row.workStatus}
+                        onChange={(e) => handleStatusChange(row.id, e.target.value)}
+                        onBlur={() => handleBlurRow(row.id)}
+                      >
+                        {WORK_STATUS_OPTIONS.map((option) => (
+                          <option
+                            key={option.value}
+                            value={option.value}
+                            disabled={option.value === WORK_STATUS.NONE}
+                            hidden={option.value === WORK_STATUS.NONE}
+                          >
+                            {option.label}
+                          </option>
+                        ))}
                         </select>
                       )}
                     </td>

@@ -50,7 +50,12 @@ function LoginPage() {
       password.length > PASSWORD_MAX_LENGTH
     ) {
       setPasswordError(
-        getErrorMessage("E004", "パスワード", PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH)
+        getErrorMessage(
+          "E004",
+          "パスワード",
+          PASSWORD_MIN_LENGTH,
+          PASSWORD_MAX_LENGTH
+        )
       );
       valid = false;
     }
