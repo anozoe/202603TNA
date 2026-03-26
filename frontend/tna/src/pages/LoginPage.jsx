@@ -21,6 +21,18 @@ function LoginPage() {
     const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     return regex.test(value);
   };
+  
+  const isValidPassword = (value) => {
+    if (value.length < 8) return false;
+
+    const hasLetter = /[A-Za-z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+    const hasSymbol = /[^A-Za-z0-9]/.test(value);
+
+    const typeCount = [hasLetter, hasNumber, hasSymbol].filter(Boolean).length;
+
+    return typeCount >= 2;
+  };
 
   const mailChecker = (value) => {
     if (!value) {
@@ -40,10 +52,9 @@ function LoginPage() {
     if (!value) {
       setPasswordError(getErrorMessage("E001", "パスワード"));
       return false;
-    // } else if (!isValidEmail(value)) {
-    //   // TODO: パスワードに形式チェックなんて無いのでは？設計書修正が必要
-    //   setPasswordError(getErrorMessage("E002", "パスワード"));
-    //   return false;
+    } else if (!isValidPassword(value)) {
+      setPasswordError(getErrorMessage("E002", "パスワード"));
+      return false;
     } else if (value.length < PASSWORD_MIN_LENGTH || value.length > PASSWORD_MAX_LENGTH) {
       setPasswordError(getErrorMessage("E004", "パスワード", PASSWORD_MIN_LENGTH.toString(), PASSWORD_MAX_LENGTH.toString()));
       return false;
@@ -157,7 +168,7 @@ function LoginPage() {
             to="/register"
             className="sub-link"
           >
-            新規会員登録はこちら
+            ユーザ登録へ
           </Link>
         </div>
       </div>

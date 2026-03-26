@@ -38,54 +38,19 @@ function RegisterPage() {
     return typeCount >= 2;
   };
 
-    const mailChecker = (value) => {
-      if (!value) {
-        setMailError(getErrorMessage("E001", "メールアドレス"));
-        return false;
-      } else if (!isValidEmail(value)) {
-        setMailError(getErrorMessage("E002", "メールアドレス"));
-        return false;
-      } else if (value.length > MAIL_MAX_LENGTH) {
-        setMailError(getErrorMessage("E003", "メールアドレス", MAIL_MAX_LENGTH.toString()));
-        return false;
-      }
-      return true;
+  const nameChecker = (value) => {
+    if (!value) {
+      setNameError(getErrorMessage("E001", "ユーザ名"));
+      return false;
+    } else if (!nameRegex.test(value)) {
+      setNameError(getErrorMessage("E002", "ユーザ名"));
+      return false;
+    } else if (value.length > 50) {
+      setNameError(getErrorMessage("E003", "ユーザ名", "30"));
+      return false;
     }
-  
-    const passwordChecker = (value) => {
-      if (!value) {
-        setPasswordError(getErrorMessage("E001", "パスワード"));
-        return false;
-      // } else if (!isValidEmail(value)) {
-      //   // TODO: パスワードに形式チェックなんて無いのでは？設計書修正が必要
-      //   setPasswordError(getErrorMessage("E002", "パスワード"));
-      //   return false;
-      } else if (value.length < PASSWORD_MIN_LENGTH || value.length > PASSWORD_MAX_LENGTH) {
-        setPasswordError(getErrorMessage("E004", "パスワード", PASSWORD_MIN_LENGTH.toString(), PASSWORD_MAX_LENGTH.toString()));
-        return false;
-      }
-      return true;
-    }
-    
-  const handleRegister = async (e) => {
-    e.preventDefault();
-
-    setNameError("");
-    setMailError("");
-    setPasswordError("");
-
-    let valid = true;
-
-    if (!userName) {
-      setNameError("名前は必須です");
-      valid = false;
-    } else if (userName.length > 50) {
-      setNameError("文字数上限を超えています");
-      valid = false;
-    } else if (!nameRegex.test(userName)) {
-      setNameError("正しい名前を入力してください");
-      valid = false;
-    }
+    return true;
+  };
 
   const mailChecker = (value) => {
     if (!value) {
@@ -105,18 +70,27 @@ function RegisterPage() {
     if (!value) {
       setPasswordError(getErrorMessage("E001", "パスワード"));
       return false;
-    // } else if (!isValidEmail(value)) {
-    //   // TODO: パスワードに形式チェックなんて無いのでは？設計書修正が必要
-    //   setPasswordError(getErrorMessage("E002", "パスワード"));
-    //   return false;
+    } else if (!isValidPassword(value)) {
+      setPasswordError(getErrorMessage("E002", "パスワード"));
+      return false;
     } else if (value.length < PASSWORD_MIN_LENGTH || value.length > PASSWORD_MAX_LENGTH) {
       setPasswordError(getErrorMessage("E004", "パスワード", PASSWORD_MIN_LENGTH.toString(), PASSWORD_MAX_LENGTH.toString()));
       return false;
     }
     return true;
   }
+    
+  const handleRegister = async (e) => {
+    e.preventDefault();
 
+    setNameError("");
+    setMailError("");
+    setPasswordError("");
 
+    let valid = true;
+    if (!nameChecker(userName)) valid = false;
+    if (!mailChecker(email)) valid = false;
+    if (!passwordChecker(password)) valid = false;
     if (!valid) return;
 
     try {
@@ -142,9 +116,11 @@ function RegisterPage() {
       const data = await response.json();
       console.log("登録成功:", data);
 
-      alert("ユーザ登録成功");
       navigate("/");
     } catch (error) {
+      // TODO:メールアドレス重複エラーの実装が必要
+      // setMailError(getErrorMessage("E005", "メールアドレス"));
+
       console.error(error);
       alert("サーバーに接続できません");
     }
@@ -153,7 +129,7 @@ function RegisterPage() {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h1 className="auth-title">新規会員登録</h1>
+        <h1 className="auth-title">ユーザ登録</h1>
 
         <p className="auth-subtitle">
           名前、メールアドレス、パスワードを入力してください
@@ -234,7 +210,7 @@ function RegisterPage() {
             to="/"
             className="sub-link"
           >
-            ログイン画面はこちら
+            ログインへ
           </Link>
         </div>
       </div>
