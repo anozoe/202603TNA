@@ -1,32 +1,47 @@
 import "./ListPage.css";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-const USER_LIST = [
-  { userId: 1, userName: "山田", departmentName: "1" },
-  { userId: 2, userName: "田中", departmentName: "2" },
-  { userId: 3, userName: "佐藤", departmentName: "3" },
-  { userId: 4, userName: "鈴木", departmentName: "4" },
-  { userId: 5, userName: "高橋", departmentName: "5" },
-];
+import { fetchJson } from "./utils/api";
 
 function ListPage({ loginUserName = "User Name", onLogout }) {
   const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const [message, setMessage] = useState("");
+
+  const loginUserId = Number(localStorage.getItem("loginUserId") || 0);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const now = new Date();
+        const yearMonth = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}`;
+        const data = await fetchJson(`http://localhost:8080/api/users/${yearMonth}`);
+        setUsers(Array.isArray(data) ? data : []);
+      } catch (error) {
+        setMessage(error?.message || "ユーザ一覧の取得に失敗しました。");
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const handleMoveAttendancePage = (user) => {
     navigate("/attendance/view", {
       state: {
-        userId: user.userId,
-        displayName: user.userName,
+        userId: user.id,
+        displayName: user.name,
         isReadOnly: true,
       },
     });
   };
 
   const handleMoveMyAttendancePage = () => {
+    const loginUserNameStored = localStorage.getItem("loginUserName") || "自分";
+
     navigate("/attendance/my", {
       state: {
-        userId: 1,
-        displayName: "自分",
+        userId: loginUserId || 1,
+        displayName: loginUserNameStored,
         isReadOnly: false,
       },
     });
@@ -60,6 +75,8 @@ function ListPage({ loginUserName = "User Name", onLogout }) {
           </button>
         </div>
 
+        {message && <p className="error-text">{message}</p >}
+
         <div className="list-table-wrap">
           <table className="list-table">
             <thead>
@@ -71,21 +88,32 @@ function ListPage({ loginUserName = "User Name", onLogout }) {
               </tr>
             </thead>
             <tbody>
-              {USER_LIST.map((user) => (
-                <tr key={user.userId}>
-                  <td>{user.userId}</td>
-                  <td>{user.userName}</td>
-                  <td>{user.departmentName}</td>
-                  <td>
-                    <button
-                      className="list-view-btn"
-                      onClick={() => handleMoveAttendancePage(user)}
-                    >
-                      勤怠実績を見る
-                    </button>
-                  </td>
+              {users.map((user) => {
+                const isMyself = Number(user.id) === loginUserId;
+
+                return (
+                  <tr key={user.id}>
+                    <td>{user.id}</td>
+                    <td>{user.name}</td>
+                    <td>{user.departmentName ?? "-"}</td>
+                    <td>
+                      {!isMyself && (
+                        <button
+                          className="list-view-btn"
+                          onClick={() => handleMoveAttendancePage(user)}
+                        >
+                          勤怠実績を見る
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+              {users.length === 0 && (
+                <tr>
+                  <td colSpan="4">ユーザが存在しません。</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

@@ -1,4 +1,4 @@
-package com.example.tna.entity;
+/*package com.example.tna.old;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,3 +30,4 @@ public class TnaEntity {
     private LocalDateTime updatedAt;
     private String updatedBy;
 }
+*/

@@ -1,4 +1,4 @@
-package com.example.tna.dto;
+/*package com.example.tna.old;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,3 +29,4 @@ public class TnaResponse {
     String workStatus;
 
 }
+*/

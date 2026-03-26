@@ -16,7 +16,7 @@ public class MessageService {
         return messageSource.getMessage(messageCode, null, Locale.JAPAN);
     }
 
-    public String getMessage(String messageCode, Object[] args) {
+    public String getMessage(String messageCode, Object... args) {
         return messageSource.getMessage(messageCode, args, Locale.JAPAN);
     }
 }

@@ -1,9 +1,7 @@
-package com.example.tna.repository;
+/*package com.example.tna.old;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.example.tna.entity.TnaEntity;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,4 +14,4 @@ public interface TnaRepository extends JpaRepository<TnaEntity, Integer>{
         LocalDate startDate,
         LocalDate endDate
     );
-}
+}*/

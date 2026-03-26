@@ -25,7 +25,6 @@ import java.util.*;
 public class AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
-    private final MessageService messageService;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("H:mm");
@@ -62,7 +61,6 @@ public class AttendanceService {
         AttendanceSummaryDto attendanceSummaryDto = createAttendanceSummary(attendanceRowDtoList);
 
         AttendanceResponseDto attendanceResponseDto = new AttendanceResponseDto();
-        attendanceResponseDto.setMessage(messageService.getMessage("attendance.fetch.success"));
         attendanceResponseDto.setUserId(userId);
         attendanceResponseDto.setYear(year);
         attendanceResponseDto.setMonth(month);
@@ -84,20 +82,18 @@ public class AttendanceService {
             saveAttendanceRow(userId, year, month, attendanceRowDto);
         }
 
-        AttendanceResponseDto attendanceResponseDto = getAttendance(userId, year, month);
-        attendanceResponseDto.setMessage(messageService.getMessage("attendance.update.success"));
-        return attendanceResponseDto;
+        return getAttendance(userId, year, month);
     }
 
     private void saveAttendanceRow(Integer userId, Integer year, Integer month, AttendanceRowDto attendanceRowDto) {
         LocalDate workDate = parseDate(attendanceRowDto.getWorkDate());
 
         if (workDate == null) {
-            throw new BusinessException(messageService.getMessage("attendance.workDate.required"));
+            throw new BusinessException("E001", "勤務日");
         }
 
         if (workDate.getYear() != year || workDate.getMonthValue() != month) {
-            throw new BusinessException(messageService.getMessage("attendance.workDate.invalidMonth"));
+            throw new BusinessException("E002", "勤務日");
         }
 
         Attendance attendanceEntity = attendanceRepository
@@ -219,22 +215,22 @@ public class AttendanceService {
 
     private void validateSearchCondition(Integer userId, Integer year, Integer month) {
         if (userId == null) {
-            throw new BusinessException(messageService.getMessage("attendance.userId.required"));
+            throw new BusinessException("E001", "ユーザID");
         }
         if (year == null) {
-            throw new BusinessException(messageService.getMessage("attendance.year.required"));
+            throw new BusinessException("E001", "年");
         }
         if (month == null) {
-            throw new BusinessException(messageService.getMessage("attendance.month.required"));
+            throw new BusinessException("E001", "月");
         }
         if (month < 1 || month > 12) {
-            throw new BusinessException(messageService.getMessage("attendance.month.range"));
+            throw new BusinessException("E002", "月");
         }
     }
 
     private void validateSaveRequest(AttendanceRequestDto attendanceRequestDto) {
         if (attendanceRequestDto == null) {
-            throw new BusinessException(messageService.getMessage("attendance.request.required"));
+            throw new BusinessException("E001", "勤怠更新リクエスト");
         }
 
         validateSearchCondition(
@@ -244,13 +240,13 @@ public class AttendanceService {
         );
 
         if (attendanceRequestDto.getAttendanceRowList() == null) {
-            throw new BusinessException(messageService.getMessage("attendance.rowList.required"));
+            throw new BusinessException("E001", "勤怠明細");
         }
     }
 
     private void validateTimeRelation(LocalTime startTime, LocalTime endTime) {
         if (startTime != null && endTime != null && !startTime.isBefore(endTime)) {
-            throw new BusinessException(messageService.getMessage("attendance.time.order"));
+            throw new BusinessException("E002", "出勤時刻と退勤時刻");
         }
     }
 

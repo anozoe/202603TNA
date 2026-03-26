@@ -1,25 +1,27 @@
 package com.example.tna.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.tna.dto.UserResponse;
-import com.example.tna.service.UserService;
-
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
+import com.example.tna.dto.RegisterRequestDto;
+import com.example.tna.dto.UserResponse;
+import com.example.tna.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
+
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService; 
+    @PostMapping("/register")
+    public UserResponse register(@RequestBody RegisterRequestDto request) {
+        return userService.register(request);
     }
 
     @GetMapping("/{yearMonth}")
@@ -27,5 +29,4 @@ public class UserController {
         List<UserResponse> userResult = userService.getUserList(yearMonth);
         return ResponseEntity.ok(userResult);
     }
-    
 }

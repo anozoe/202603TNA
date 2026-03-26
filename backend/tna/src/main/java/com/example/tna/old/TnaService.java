@@ -1,4 +1,4 @@
-package com.example.tna.service;
+/*package com.example.tna.old;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -7,11 +7,6 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-
-import com.example.tna.dto.TnaRequest;
-import com.example.tna.dto.TnaResponse;
-import com.example.tna.entity.TnaEntity;
-import com.example.tna.repository.TnaRepository;
 
 @Service
 public class TnaService {
@@ -52,4 +47,4 @@ public class TnaService {
         BeanUtils.copyProperties(saved, response);
         return response;
     }
-}
+}*/

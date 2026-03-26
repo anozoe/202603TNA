@@ -1,3 +1,4 @@
+/*package com.example.tna.old;
 package com.example.tna.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,3 +41,4 @@ public class TnaController {
         return ResponseEntity.ok(updatedAttendance);
     }
 }
+*/
