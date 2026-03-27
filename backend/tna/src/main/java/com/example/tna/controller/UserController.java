@@ -1,25 +1,33 @@
 package com.example.tna.controller;
 
-import com.example.tna.dto.PageResponseDto;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.tna.dto.UserResponse;
 import com.example.tna.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/api/users")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
-
     private final UserService userService;
 
-    @GetMapping("/{yearMonth}")
-    public PageResponseDto<UserResponse> getUserList(
-            @PathVariable Integer yearMonth,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
-    ) {
-        return userService.getUserList(yearMonth, page, size);
+    public UserController(UserService userService) {
+        this.userService = userService; 
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/{yearMonth}")
+    public ResponseEntity<List<UserResponse>> getUserList(@PathVariable Integer yearMonth) {
+        List<UserResponse> userResult = userService.getUserList(yearMonth);
+        return ResponseEntity.ok(userResult);
+    }
+    
 }
