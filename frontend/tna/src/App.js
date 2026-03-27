@@ -5,7 +5,7 @@ import RegisterPage from "./pages/RegisterPage";
 import AttendancePage from "./AttendancePage";
 import ListPage from "./pages/UserListPage";
 
-function AttendanceMyPageWrapper() {
+function AttendancePageWrapper({ onLogout }) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -26,26 +26,6 @@ function AttendanceMyPageWrapper() {
       loginUserName={loginUserName}
       displayName={state.displayName}
       isReadOnly={state.isReadOnly}
-      onLogout={() => {
-        localStorage.clear();
-        navigate("/");
-      }}
-      onBack={() => navigate("/users")}
-    />
-  );
-}
-
-function AttendanceViewPageWrapper({ onLogout }) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const loginUserName = localStorage.getItem("loginUserName") || "User Name";
-
-  return (
-    <AttendancePage
-      userId={state.userId}
-      loginUserName={localStorage.getItem("loginUserName")} 
-      displayName={state.displayName}
-      isReadOnly={state.isReadOnly}
       onLogout={onLogout}
       onBack={() => navigate("/users")}
     />
@@ -53,13 +33,15 @@ function AttendanceViewPageWrapper({ onLogout }) {
 }
 
 function App() {
-  const navigate =useNavigate();
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     localStorage.removeItem("loginUserId");
     localStorage.removeItem("loginUserName");
     localStorage.removeItem("loginUserEmail");
     navigate("/");
   };
+
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
@@ -68,16 +50,17 @@ function App() {
         path="/users"
         element={
           <ListPage
-            loginUserName={localStorage.getItem("loginUserName")}  
-            onLogout={handleLogout} 
+            loginUserName={localStorage.getItem("loginUserName") || "User Name"}
+            onLogout={handleLogout}
           />
         }
       />
-      <Route path="/attendance/my" element={<AttendanceMyPageWrapper />} />
-      <Route path="/attendance/view" element={<AttendanceViewPageWrapper />} />
-      <Route path="*" element={<Navigate to="/" replace />} />  
+      <Route
+        path="/attendance"
+        element={<AttendancePageWrapper onLogout={handleLogout} />}
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-
   );
 }
 

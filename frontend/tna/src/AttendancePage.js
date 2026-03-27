@@ -53,12 +53,21 @@ function AttendancePage({
   const state = location.state || {};
 
   const today = new Date();
-  const [selectedYear, setSelectedYear] = useState(
-    state.year || today.getFullYear()
-  );
-  const [selectedMonth, setSelectedMonth] = useState(
-    state.month || (today.getMonth() + 1)
-  );
+
+const selectedYearMonth = state.selectedYearMonth;
+const initialYear =
+  typeof selectedYearMonth === "number"
+    ? Math.floor(selectedYearMonth / 100)
+    : state.year || today.getFullYear();
+
+const initialMonth =
+  typeof selectedYearMonth === "number"
+    ? selectedYearMonth % 100
+    : state.month || (today.getMonth() + 1);
+
+const [selectedYear, setSelectedYear] = useState(initialYear);
+const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+
   const [rows, setRows] = useState([]);
   const [errors, setErrors] = useState({});
   const [pageMessage, setPageMessage] = useState("");
