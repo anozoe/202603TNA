@@ -3,9 +3,9 @@ import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import AttendancePage from "./AttendancePage";
-import ListPage from "./ListPage";
+import ListPage from "./pages/UserListPage";
 
-function AttendanceMyPageWrapper({ onLogout }) {
+function AttendanceMyPageWrapper() {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -77,6 +77,7 @@ function App() {
       <Route path="/attendance/view" element={<AttendanceViewPageWrapper />} />
       <Route path="*" element={<Navigate to="/" replace />} />  
     </Routes>
+
   );
 }
 

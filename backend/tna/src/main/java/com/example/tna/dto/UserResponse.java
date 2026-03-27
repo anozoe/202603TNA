@@ -1,10 +1,11 @@
 package com.example.tna.dto;
 
-import lombok.Data;
 
-@Data
-public class UserResponse {
-    Integer id;
-    String name;
-    String email;
+
+public interface UserResponse {
+
+    Integer getUserId();
+    String getName();
+    Long getWorkDays();
+    String getWorkTimeTotal();
 }

@@ -1,29 +1,31 @@
 package com.example.tna.service;
 
 import com.example.tna.dto.RegisterRequestDto;
+import com.example.tna.dto.RegisterResponseDto;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.example.tna.dto.UserResponse;
 import com.example.tna.entity.UserEntity;
 import com.example.tna.exception.BusinessException;
+import com.example.tna.repository.AttendanceRepository;
 import com.example.tna.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
-import java.util.List;
 
-import lombok.RequiredArgsConstructor;
+
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AttendanceRepository attendanceRepository;
 
-    public List<UserEntity> getUserList(Integer yearMonth) {
-        return userRepository.findAllByOrderByIdAsc();
-    }
-
-    public UserResponse register(RegisterRequestDto requestDto) {
+    public RegisterResponseDto register(RegisterRequestDto requestDto) {
         validate(requestDto);
 
         if (userRepository.existsByEmail(requestDto.getEmail())) {
@@ -41,7 +43,7 @@ public class UserService {
 
         UserEntity saved = userRepository.save(entity);
 
-        UserResponse response = new UserResponse();
+        RegisterResponseDto response = new RegisterResponseDto();
         response.setId(saved.getId());
         response.setName(saved.getName());
         response.setEmail(saved.getEmail());
@@ -102,5 +104,18 @@ public class UserService {
         if (hasSymbol) typeCount++;
 
         return typeCount >= 2;
+    }
+
+
+
+    public List<UserResponse> getUserList(Integer yearMonth) {
+        int year = yearMonth / 100;
+        int month = yearMonth % 100;
+        LocalDate fromDate = LocalDate.of(year, month, 1);
+        LocalDate toDate = fromDate.withDayOfMonth(fromDate.lengthOfMonth());
+
+        // SQLで集計取得
+        return attendanceRepository.findSummaryByMonth(fromDate, toDate);
+
     }
 }
