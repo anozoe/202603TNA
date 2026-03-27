@@ -35,6 +35,34 @@ function LoginPage() {
     return regex.test(value);
   };
   
+    const mailChecker = (value) => {
+    if (!value) {
+      setMailError(getErrorMessage("E001", "メールアドレス"));
+      return false;
+    } else if (!isValidEmail(value)) {
+      setMailError(getErrorMessage("E002", "メールアドレス"));
+      return false;
+    } else if (value.length > MAIL_MAX_LENGTH) {
+      setMailError(getErrorMessage("E003", "メールアドレス", MAIL_MAX_LENGTH.toString()));
+      return false;
+    }
+    return true;
+  }
+
+  const passwordChecker = (value) => {
+    if (!value) {
+      setPasswordError(getErrorMessage("E001", "パスワード"));
+      return false;
+    } else if (!isValidPassword(value)) {
+      setPasswordError(getErrorMessage("E002", "パスワード"));
+      return false;
+    } else if (value.length < PASSWORD_MIN_LENGTH || value.length > PASSWORD_MAX_LENGTH) {
+      setPasswordError(getErrorMessage("E004", "パスワード", PASSWORD_MIN_LENGTH.toString(), PASSWORD_MAX_LENGTH.toString()));
+      return false;
+    }
+    return true;
+  }
+
   const isValidPassword = (value) => {
     const hasLetter = /[A-Za-z]/.test(value);
     const hasNumber = /[0-9]/.test(value);
@@ -44,7 +72,7 @@ function LoginPage() {
 
     setMailError("");
     setPasswordError("");
-    setCommonError("");
+    // setCommonError("");
 
     if (!email) {
       setMailError(getErrorMessage("E001", "メールアドレス"));
@@ -157,7 +185,7 @@ function LoginPage() {
             )}
           </div>
 
-          {commonError && <p className="error-text">{commonError}</p >}
+          {/* {commonError && <p className="error-text">{commonError}</p >} */}
 
           <button id="login_button" type="submit" className="main-button">
             ログイン
