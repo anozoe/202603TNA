@@ -42,19 +42,19 @@ function ListPage({ onLogout }) {
   const [totalElements, setTotalElements] = useState(0);
 
   useEffect(() => {
-    getUserList(selectedMonth, page, size)
+    getUserList(selectedMonth)
       .then((data) => {
-        const content = Array.isArray(data.content) ? data.content : [];
+        const list = Array.isArray(data) ? data : [];
 
-        const sorted = [...content].sort((a, b) => {
+        const sorted = [...list].sort((a, b) => {
           if (a.userId === loginUserId) return -1;
           if (b.userId === loginUserId) return 1;
           return 0;
         });
 
         setUserList(sorted);
-        setTotalPages(data.totalPages ?? 0);
-        setTotalElements(data.totalElements ?? 0);
+        setTotalPages(Math.ceil(list.length / size));
+        setTotalElements(list.length);
         setCommonError("");
       })
       .catch((error) => {
