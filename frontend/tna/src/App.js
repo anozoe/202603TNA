@@ -5,7 +5,7 @@ import RegisterPage from "./pages/RegisterPage";
 import AttendancePage from "./AttendancePage";
 import ListPage from "./pages/UserListPage";
 
-function AttendancePageWrapper() {
+function AttendanceMyPageWrapper() {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -35,22 +35,31 @@ function AttendancePageWrapper() {
   );
 }
 
-function UsersPageWrapper() {
+function AttendanceViewPageWrapper({ onLogout }) {
+  const location = useLocation();
   const navigate = useNavigate();
   const loginUserName = localStorage.getItem("loginUserName") || "User Name";
 
   return (
-    <ListPage
-      loginUserName={loginUserName}
-      onLogout={() => {
-        localStorage.clear();
-        navigate("/");
-      }}
+    <AttendancePage
+      userId={state.userId}
+      loginUserName={localStorage.getItem("loginUserName")} 
+      displayName={state.displayName}
+      isReadOnly={state.isReadOnly}
+      onLogout={onLogout}
+      onBack={() => navigate("/users")}
     />
   );
 }
 
 function App() {
+  const navigate =useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("loginUserId");
+    localStorage.removeItem("loginUserName");
+    localStorage.removeItem("loginUserEmail");
+    navigate("/");
+  };
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
@@ -59,14 +68,14 @@ function App() {
         path="/users"
         element={
           <ListPage
-            loginUserName="User Name"
-            onLogout={() => alert("ログアウト")}
+            loginUserName={localStorage.getItem("loginUserName")}  
+            onLogout={handleLogout} 
           />
         }
       />
       <Route path="/attendance/my" element={<AttendanceMyPageWrapper />} />
       <Route path="/attendance/view" element={<AttendanceViewPageWrapper />} />
-      <Route path="*" element={<Navigate to="/users" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />  
     </Routes>
 
   );

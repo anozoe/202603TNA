@@ -30,8 +30,8 @@ public class AttendanceController {
     }
 
     @PutMapping
-    public AttendanceResponseDto saveAttendance(@RequestBody AttendanceRequestDto attendanceRequestDto) {
-        return attendanceService.saveAttendance(attendanceRequestDto);
+    public AttendanceResponseDto updateAttendance(@RequestBody AttendanceRequestDto requestDto) {
+        return attendanceService.saveAttendance(requestDto);
     }
 
     @GetMapping("/{yearMonth}/{id}")

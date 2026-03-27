@@ -1,3 +1,4 @@
+import { registerApi } from "../API/Login";
 import "../App.css";
 import "./LoginRegister.css";
 import { useState } from "react";
@@ -143,9 +144,12 @@ function RegisterPage() {
             <input
               id="user_name"
               type="text"
-              maxLength="50"
+              maxLength="30"
               value={userName}
-              onChange={(e) => setUserName(e.target.value)}
+              onChange={(e) => {
+                const trimmed = e.target.value.replace(/[\s\u3000]/g, "");
+                setUserName(trimmed);
+              }}
             />
             {nameError && <p className="error-text">{nameError}</p >}
           </div>
