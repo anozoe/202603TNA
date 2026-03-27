@@ -8,6 +8,4 @@ import lombok.Data;
 public class ApiErrorResponseDto {
     private String messageId;
     private String message;
-    private String path;
-    private String timestamp;
 }
