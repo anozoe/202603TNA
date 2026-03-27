@@ -2,7 +2,6 @@ package com.example.tna.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,10 +15,10 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id")
     private Integer userId;
 
-    @Column(name = "work_date", nullable = false)
+    @Column(name = "work_date")
     private LocalDate workDate;
 
     @Column(name = "start_time")
@@ -31,7 +30,7 @@ public class Attendance {
     @Column(name = "break_time")
     private LocalTime breakTime;
 
-    @Column(name = "actual_work_time", nullable = false)
+    @Column(name = "actual_work_time")
     private LocalTime actualWorkTime;
 
     @Column(name = "work_status")

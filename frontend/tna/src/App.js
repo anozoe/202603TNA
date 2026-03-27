@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import AttendancePage from "./AttendancePage";
-import ListPage from "./ListPage";
+import ListPage from "./pages/UserListPage";
 
 function AttendancePageWrapper() {
   const location = useLocation();
@@ -55,10 +55,20 @@ function App() {
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/users" element={<UsersPageWrapper />} />
-      <Route path="/attendance" element={<AttendancePageWrapper />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route
+        path="/users"
+        element={
+          <ListPage
+            loginUserName="User Name"
+            onLogout={() => alert("ログアウト")}
+          />
+        }
+      />
+      <Route path="/attendance/my" element={<AttendanceMyPageWrapper />} />
+      <Route path="/attendance/view" element={<AttendanceViewPageWrapper />} />
+      <Route path="*" element={<Navigate to="/users" replace />} />
     </Routes>
+
   );
 }
 

@@ -323,4 +323,28 @@ public class AttendanceService {
 
         return hour + ":" + minute;
     }
+
+    
+    public AttendanceResponseDto getAttendanceById(Integer yearMonth, Integer id) {
+        int year = yearMonth / 100;
+        int month = yearMonth % 100;
+        return getAttendance(id, year, month);
+    }
+
+    @Transactional
+    public AttendanceResponseDto updateAttendance(Integer yearMonth, Integer id, AttendanceRequestDto request) {
+        int year = yearMonth / 100;
+        int month = yearMonth % 100;
+
+        Attendance entity = attendanceRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                    messageService.getMessage("attendance.notFound")));
+
+        AttendanceRowDto rowDto = request.getAttendanceRowList().get(0);
+        saveAttendanceRow(entity.getUserId(), year, month, rowDto);
+
+        AttendanceResponseDto response = getAttendance(entity.getUserId(), year, month);
+        response.setMessage(messageService.getMessage("attendance.update.success"));
+        return response;
+    }
 }

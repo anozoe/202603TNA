@@ -2,8 +2,13 @@ package com.example.tna.controller;
 
 import com.example.tna.dto.AttendanceRequestDto;
 import com.example.tna.dto.AttendanceResponseDto;
+
 import com.example.tna.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
+
+
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
+    
 
     @GetMapping
     public AttendanceResponseDto getAttendance(
@@ -26,5 +32,18 @@ public class AttendanceController {
     @PutMapping
     public AttendanceResponseDto saveAttendance(@RequestBody AttendanceRequestDto attendanceRequestDto) {
         return attendanceService.saveAttendance(attendanceRequestDto);
+    }
+
+    @GetMapping("/{yearMonth}/{id}")
+    public ResponseEntity<AttendanceResponseDto> getAttendanceById(@PathVariable Integer yearMonth, @PathVariable Integer id) {
+        AttendanceResponseDto result = attendanceService.getAttendanceById(yearMonth, id);
+        return ResponseEntity.ok(result);
+    }
+    
+    @PutMapping("/{yearMonth}/{id}")
+    public ResponseEntity<AttendanceResponseDto> updateAttendance(@PathVariable Integer yearMonth, @PathVariable Integer id, @RequestBody AttendanceRequestDto request) {
+        //TODO: 要修正
+        AttendanceResponseDto updatedAttendance = attendanceService.updateAttendance(yearMonth, id, request);
+        return ResponseEntity.ok(updatedAttendance);
     }
 }
