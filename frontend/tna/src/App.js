@@ -5,7 +5,7 @@ import RegisterPage from "./pages/RegisterPage";
 import AttendancePage from "./AttendancePage";
 import ListPage from "./ListPage";
 
-function AttendanceMyPageWrapper() {
+function AttendanceMyPageWrapper({ onLogout }) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -27,7 +27,7 @@ function AttendanceMyPageWrapper() {
   );
 }
 
-function AttendanceViewPageWrapper() {
+function AttendanceViewPageWrapper({ onLogout }) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -40,35 +40,40 @@ function AttendanceViewPageWrapper() {
   return (
     <AttendancePage
       userId={state.userId}
-      loginUserName="User Name"
+      loginUserName={localStorage.getItem("loginUserName")} 
       displayName={state.displayName}
       isReadOnly={state.isReadOnly}
-      onLogout={() => alert("ログアウト")}
+      onLogout={onLogout}
       onBack={() => navigate("/users")}
     />
   );
 }
 
 function App() {
+  const navigate =useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("loginUserId");
+    localStorage.removeItem("loginUserName");
+    localStorage.removeItem("loginUserEmail");
+    navigate("/");
+  };
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route
-          path="/users"
-          element={
-            <ListPage
-              loginUserName="User Name"
-              onLogout={() => alert("ログアウト")}
-            />
-          }
-        />
-        <Route path="/attendance/my" element={<AttendanceMyPageWrapper />} />
-        <Route path="/attendance/view" element={<AttendanceViewPageWrapper />} />
-        <Route path="*" element={<Navigate to="/users" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route
+        path="/users"
+        element={
+          <ListPage
+            loginUserName={localStorage.getItem("loginUserName")}  
+            onLogout={handleLogout} 
+          />
+        }
+      />
+      <Route path="/attendance/my" element={<AttendanceMyPageWrapper />} />
+      <Route path="/attendance/view" element={<AttendanceViewPageWrapper />} />
+      <Route path="*" element={<Navigate to="/" replace />} />  
+    </Routes>
   );
 }
 

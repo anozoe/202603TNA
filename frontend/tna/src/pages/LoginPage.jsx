@@ -1,3 +1,4 @@
+import { loginApi } from "../API/Login";
 import "../App.css";
 import { getErrorMessage } from "../utils/errorUtil";
 import "./LoginRegister.css";
@@ -76,16 +77,7 @@ function LoginPage() {
     if (!valid) return;
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password
-        })
-      });
+     const response = await loginApi(email, password);
 
       if (!response.ok) {
         setLoginError(getErrorMessage("E008", "メールアドレス", "パスワード"));

@@ -60,7 +60,7 @@ public class UserService {
             throw new BusinessException("E003", "ユーザ名", 50);
         }
 
-        if (!requestDto.getName().matches("^[A-Za-z0-9_]+$")) {
+        if (!requestDto.getName().matches("^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uFF01-\uFF60]+$")) {
             throw new BusinessException("E002", "ユーザ名");
         }
 

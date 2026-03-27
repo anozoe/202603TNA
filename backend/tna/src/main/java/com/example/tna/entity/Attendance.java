@@ -16,36 +16,28 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(nullable = false)
     private Integer userId;
 
-    @Column(name = "work_date", nullable = false)
+    @Column(nullable = false)
     private LocalDate workDate;
 
-    @Column(name = "start_time")
     private LocalTime startTime;
 
-    @Column(name = "end_time")
     private LocalTime endTime;
 
-    @Column(name = "break_time")
     private LocalTime breakTime;
 
-    @Column(name = "actual_work_time", nullable = false)
+    @Column(nullable = false)
     private LocalTime actualWorkTime;
 
-    @Column(name = "work_status")
     private String workStatus;
 
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "created_by")
     private String createdBy;
 
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "updated_by")
     private String updatedBy;
 }

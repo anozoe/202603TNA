@@ -1,3 +1,4 @@
+import { registerApi } from "../API/Login";
 import "../App.css";
 import { getErrorMessage } from "../utils/errorUtil";
 import "./LoginRegister.css";
@@ -15,8 +16,8 @@ function RegisterPage() {
   const [mailError, setMailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const nameRegex = /^[A-Za-z0-9_]+$/;
-  
+  // const nameRegex = /^[A-Za-z0-9._%+-]+$/;
+  const nameRegex = /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uFF01-\uFF60]+$/;
   const isValidEmail = (value) => {
     const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     return regex.test(value);
@@ -45,7 +46,7 @@ function RegisterPage() {
     } else if (!nameRegex.test(value)) {
       setNameError(getErrorMessage("E002", "ユーザ名"));
       return false;
-    } else if (value.length > 50) {
+    } else if (value.length > 30) {
       setNameError(getErrorMessage("E003", "ユーザ名", "30"));
       return false;
     }
@@ -94,17 +95,7 @@ function RegisterPage() {
     if (!valid) return;
 
     try {
-      const response = await fetch("http://localhost:8080/api/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          userName: userName,
-          email: email,
-          password: password
-        })
-      });
+      const response = await registerApi(userName, email, password);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -147,9 +138,12 @@ function RegisterPage() {
             <input
               id="user_name"
               type="text"
-              maxLength="50"
+              maxLength="30"
               value={userName}
-              onChange={(e) => setUserName(e.target.value)}
+              onChange={(e) => {
+                const trimmed = e.target.value.replace(/[\s\u3000]/g, "");
+                setUserName(trimmed);
+              }}
             />
 
             {nameError && (
