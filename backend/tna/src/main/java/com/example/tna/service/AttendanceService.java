@@ -28,6 +28,7 @@ import java.util.Map;
 public class AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
+    private final MessageService messageService;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("H:mm");
