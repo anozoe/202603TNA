@@ -5,46 +5,47 @@ import RegisterPage from "./pages/RegisterPage";
 import AttendancePage from "./AttendancePage";
 import ListPage from "./pages/UserListPage";
 
-function AttendanceMyPageWrapper() {
+function AttendancePageWrapper() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const loginUserId = Number(localStorage.getItem("loginUserId") || 1);
+  const loginUserName = localStorage.getItem("loginUserName") || "User Name";
+
   const state = location.state || {
-    userId: 1,
-    displayName: "自分",
+    userId: loginUserId,
+    displayName: loginUserName,
     isReadOnly: false,
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
   };
 
   return (
     <AttendancePage
       userId={state.userId}
-      loginUserName="User Name"
+      loginUserName={loginUserName}
       displayName={state.displayName}
       isReadOnly={state.isReadOnly}
-      onLogout={() => alert("ログアウト")}
+      onLogout={() => {
+        localStorage.clear();
+        navigate("/");
+      }}
       onBack={() => navigate("/users")}
     />
   );
 }
 
-function AttendanceViewPageWrapper() {
-  const location = useLocation();
+function UsersPageWrapper() {
   const navigate = useNavigate();
-
-  const state = location.state || {
-    userId: 2,
-    displayName: "他人ユーザ",
-    isReadOnly: true,
-  };
+  const loginUserName = localStorage.getItem("loginUserName") || "User Name";
 
   return (
-    <AttendancePage
-      userId={state.userId}
-      loginUserName="User Name"
-      displayName={state.displayName}
-      isReadOnly={state.isReadOnly}
-      onLogout={() => alert("ログアウト")}
-      onBack={() => navigate("/users")}
+    <ListPage
+      loginUserName={loginUserName}
+      onLogout={() => {
+        localStorage.clear();
+        navigate("/");
+      }}
     />
   );
 }
