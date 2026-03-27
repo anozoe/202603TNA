@@ -17,7 +17,7 @@ function isValidEmail(value) {
 }
 
 function isValidUserName(value) {
-  const regex = /^[A-Za-z0-9_]+$/;
+  const regex = /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uFF01-\uFF60]+$/;
   return regex.test(value);
 }
 
