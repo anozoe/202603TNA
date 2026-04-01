@@ -1,0 +1,101 @@
+.auth-container{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.auth-box{
+  width:420px;
+  background:white;
+  padding:36px;
+  border-radius:10px;
+  border-top:8px solid #aaa;
+  box-shadow:0 0 10px rgba(0,0,0,0.15);
+}
+
+.auth-title{
+  text-align:center;
+  font-size:30px;
+  margin-bottom:10px;
+}
+
+.auth-subtitle{
+  text-align:center;
+  font-size:14px;
+  color:#666;
+  margin-bottom:15px;
+}
+
+.password-rule{
+  font-size:13px;
+  color:#666;
+  margin-bottom:20px;
+  line-height:1.5;
+}
+
+.input-group{
+  display:flex;
+  flex-direction:column;
+  margin-bottom:18px;
+}
+
+.input-group label{
+  font-weight:bold;
+  margin-bottom:6px;
+}
+
+.input-group input{
+  height:42px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  padding:0 10px;
+  font-size:15px;
+}
+
+.input-group input:focus{
+  outline:none;
+  border-color:#ffab40;
+  box-shadow:0 0 0 2px rgba(255,171,64,0.2);
+}
+
+.main-button{
+  width:100%;
+  height:46px;
+  border:none;
+  border-radius:8px;
+  background:#aaa;
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.main-button:hover{
+  background:#888;
+}
+
+.sub-link{
+  color:#ff8c00;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.sub-link:hover{
+  text-decoration:underline;
+}
+
+.link-area{
+  text-align:center;
+  margin-top:20px;
+}
+
+.sub-link{
+  color:#ff8c00;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.sub-link:hover{
+  text-decoration:underline;
+}
